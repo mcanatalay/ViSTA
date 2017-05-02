@@ -1,0 +1,400 @@
+<html>
+<head>
+	<script
+  	src="https://code.jquery.com/jquery-3.1.1.min.js"
+  	integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  	crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.css" />
+	<script src="dependencies/html2canvas.js"></script>
+	<link rel="stylesheet" href="dependencies/materialize.min.css">
+	<script src="dependencies/materialize.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	
+    <style>
+        body {
+            color: #d3d3d3;
+            font: 12pt arial;
+
+        }
+
+        #mynetwork {
+            width: 1280px;
+            height: 1024px;
+            border: 5px solid #444444;
+        }
+    </style>
+
+</head>
+
+<body>
+	<nav>
+		<div class="nav-wrapper">
+		  <div class="col s12">
+			<label class="breadcrumb">ViSTA</label>
+			<a href="#!" class="breadcrumb">Map</a>
+		  </div>
+		</div>
+	</nav>
+    <div class="container">
+		<div class="row">
+			<div class="col s12">
+				<div class="collection">
+					<ul id="mylist"></ul>
+					</div>
+		</div>
+			<div class="col s12">
+				<div id="mydoc"></div>
+			</div>
+			<div class="col s12">
+				<div id="mynetwork"></div>
+			</div>
+		</div>
+	</div>
+	<div class="fixed-action-btn">
+		<a class="btn-floating btn-large red">
+			<i class="large material-icons">mode_edit</i>
+		</a>
+		<ul>
+			<li>
+				<label class="btn-floating blue">
+					<input style="display: none;" type="file" name="file[]" onchange='readFile(this)' multiple />
+					<i class="material-icons">add</i>
+				</label>
+			</li>
+		</ul>
+  </div>
+</body>
+
+<script type="text/javascript">
+    var color = 'gray';
+    var len = undefined;
+
+    var nodes = new vis.DataSet();
+    var edges = new vis.DataSet();
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+    var mapData = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {
+        nodes: {
+            shape: 'dot',
+            borderWidth: 2
+        },
+		interaction: {
+			hover: false,
+			selectable: false,
+			dragNodes: false,
+			dragView: false,
+			zoomView: false
+		},
+		physics: false
+    };
+    network = new vis.Network(container, mapData, options);
+	network.moveTo({
+		position: {x: 0, y:0},
+		offset: {x: -640, y: -512},
+		scale: 1
+	});
+		var headers = new Array(["index","timestamp","fixDuration","posX","posY","stimuliName"]);
+		var fileHeaders = new Array();
+		var fileData = new Array();
+		var data = new Object();
+		var map = new Array();
+		//var convertedData = new Array();
+		var outScreenStrings = ["ScreenRec","No media","undefined"];
+		var dataCatagories = new Array();
+		var participantNumber = -1;
+		var currentStimuliname = "";
+		
+		
+		var onFileLoad = function(event){
+			var fileContent = event.target.result;	
+			var lines = fileContent.split(/\r\n/);
+			
+			participantNumber++;
+			fileHeaders[participantNumber] = new Array();
+			fileHeaders[participantNumber] = lines[0].split(/\t/);
+			
+			fileData[participantNumber] = new Array();
+			for(var i = 1; lines.length > i; i++){
+				var temp = lines[i].split(/\t/);
+				fileData[participantNumber][i-1] = new Object();
+						
+				for(var k = 0; temp.length > k; k++){
+					var indexName = fileHeaders[participantNumber][k];
+					fileData[participantNumber][i-1][indexName] = temp[k];
+				}
+			}
+						
+			convertData(
+				["FixationIndex","Timestamp","FixationDuration","MappedFixationPointX","MappedFixationPointY","StimuliName"],
+				["index","timestamp","fixDuration","posX","posY","stimuliName"]
+			);
+		}
+		
+		function readFile(file){
+			if(file.files && file.files[0]){
+				var reader = new FileReader();
+
+				reader.onload = onFileLoad;
+				reader.readAsText(file.files[0]);
+			}
+		}
+
+		function readData(stimuliName){
+			fetchBackgroundImage(stimuliName);
+                        currentStimuliName = stimuliName;
+			createMap(stimuliName);
+		}
+                
+                var parseSTAOutput = function(staSequence){
+                        var areaWeights = new Array();
+                        var areaNodes = new Array();
+                        var areaEdges = new Array();
+                        for(var i = 0; areasOfInterests.length > i; i++){
+                            areaWeights[i] = 0;
+                        }
+                                                
+                        for(var i = 0; staSequence.length > i; i++){
+                            areaWeights[parseInt(staSequence[i])]++;
+                            if(staSequence.length > i+1){
+                                areaEdges.push({from: parseInt(staSequence[i]), to: parseInt(staSequence[i+1]), label: i+1, arrows: "to",
+                                    smooth: {enabled: true,
+                                             type: "continuous",   
+                                            }});
+                            }
+                        }
+                        
+                        for(var i = 0; areaWeights.length > i; i++){
+                            var area = areasOfInterests[i];
+                            var x = area.startX + area.lengthX/2;
+                            var y = area.startY + area.lengthY/2;
+                            areaNodes.push({id: i, x: x, y: y, value: areaWeights[i], group: i, label: i});
+                        }
+                        
+                        createVisualMap({nodes: areaNodes, edges: areaEdges})
+                }
+                
+		function createVisualMap(visualizationData){
+                        nodes.clear();
+                        edges.clear();
+
+                        nodes.update(visualizationData.nodes);
+                        edges.update(visualizationData.edges);
+		}
+                
+                function createSTAMap(){
+                        getSTAData(parseSTAOutput);
+                }
+		
+		function getSTAData(visualizationMethod){
+			var staInputData = new Object;
+			var staInputParticipants = dataCatagories[findCategoryIndex(currentStimuliName)].participants;
+			for(var i = 0; staInputParticipants.length > i; i++){
+				staInputData[staInputParticipants[i]] = data[currentStimuliName].get({
+					filter: function (row) {
+						return row.participantNumber == staInputParticipants[i];
+					}
+				});
+			}
+			var postData = {
+				areaData: areasOfInterests,
+				rawData: staInputData,
+			};
+			$.ajax({
+				type: "POST",
+				url: 'sockets/client.php',
+				data: {jsondata: JSON.stringify(postData)},
+				success: function(response){
+                                    visualizationMethod(JSON.parse(response));
+				}
+			});	
+		}
+		
+		function convertData(fileHeaders, originalHeaders){
+			var convertedData = new Array();
+			
+			convertedData[participantNumber] = new Array();
+
+			for(var i = 0; fileData[participantNumber].length > i; i++){
+				convertedData[participantNumber][i] = new Object(); 
+				for(var j  = 0; originalHeaders.length > j; j++){
+					var newIndexName = originalHeaders[j];
+					var oldIndexName = fileHeaders[j];
+
+					convertedData[participantNumber][i][newIndexName] = fileData[participantNumber][i][oldIndexName]; 
+				}
+			}
+			
+			parseData(convertedData);
+		}
+		
+		function isCategoryExist(categoryName){
+			for(var i = 0; dataCatagories.length > i; i++){
+				if(dataCatagories[i].name == categoryName){
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		function isParticipantExistInCategory(categoryName, participantID){
+			var categoryIndex = findCategoryIndex(categoryName);
+			for(var i = 0; dataCatagories[categoryIndex].participants.length > i; i++){
+				if(dataCatagories[categoryIndex].participants[i] == participantID){
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		function checkCategoryName(categoryName){
+			for(var i = 0; outScreenStrings.length > i; i++){
+				if(outScreenStrings[i] == categoryName){
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		function findCategoryIndex(categoryName){
+			var categoryIndex;
+			for(categoryIndex = 0; dataCatagories[categoryIndex].name != categoryName; categoryIndex++);
+			
+			return categoryIndex;
+		}
+				
+		function parseData(convertedData){
+			var lastCategoryName = "";
+
+			for(var i = 0; convertedData[participantNumber].length > i; i++){
+				var categoryName = convertedData[participantNumber][i]["stimuliName"];
+
+				if(checkCategoryName(categoryName)){
+					if(!isCategoryExist(categoryName)){
+						dataCatagories.push({name: categoryName, participants: [participantNumber]});
+						data[categoryName] = new vis.DataSet();
+						$('#mylist').append('<a data-stimuliname="'+categoryName+'" class="collection-item list-element">'+categoryName+'</a>');
+					} else if(!isParticipantExistInCategory(categoryName,participantNumber)){
+						dataCatagories[findCategoryIndex(categoryName,participantNumber)].participants.push(participantNumber);
+					}
+					
+					var lastIndex = data[categoryName].add(convertedData[participantNumber][i]);
+					var isConnected = (lastCategoryName == categoryName ? true : false);
+					data[categoryName].update({id: lastIndex, participantNumber: participantNumber, isConnected: isConnected});
+				}
+				lastCategoryName = categoryName;
+			}
+		}
+		
+		$("#mylist").delegate("a","click",function() {
+          readData($(this).data("stimuliname"));
+		  $(this).parent().find("a").removeClass("active");
+		  $(this).addClass("active");
+        });
+		
+		function mapVisualData(stimuliInstant){
+			var nodeData = {};
+			
+			nodeData.id = nodes.length;
+			nodeData.label = stimuliInstant["index"];
+			nodeData.value = parseInt(stimuliInstant["fixDuration"]);
+			nodeData.x = parseInt(stimuliInstant["posX"]);
+			nodeData.y = parseInt(stimuliInstant["posY"]);
+			nodeData.group = parseInt(stimuliInstant["participantNumber"]);
+			return nodeData;
+			
+		}
+		
+		function createMap(stimuliName){
+			var stimuliData = data[stimuliName].get();
+			
+			for(var i=0;i<stimuliData.length;i++){
+				nodes.update(mapVisualData(stimuliData[i]));
+
+				if(i > 0 && stimuliData[i]["isConnected"] == true){
+					var edgeData = {};
+					edgeData.from = nodes.length-2;
+					edgeData.to = nodes.length-1;
+					
+					edges.update(edgeData);
+				}
+			}
+		}
+		
+		function fetchBackgroundImage(imgAddress){
+			html2canvas(imgAddress,{
+				proxy:"proxy.php",
+				allowTaint: true,
+				width: 1280,
+				height: 1024,
+			}
+			).then(function(canvas) {
+				var img = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+				$('#mynetwork').css('background-image', 'url(' + img + ')');
+			});
+		}
+		
+		function isPointAvailable(x,y){
+			for(var i = 0; areasOfInterests.length > i; i++){
+				var area = areasOfInterests[i];
+				if(x > area.startX && y > area.startY &&
+					x < area.endX && y < area.endY){
+						return false;
+				} else{
+					return true;
+				}
+			}
+			return true;
+		}
+		
+		var areasOfInterests = new Array();
+		var firstClick = null;
+		network.on("click", function (params) {
+			var currentClick = params.pointer.canvas;
+			if(isPointAvailable(currentClick.x,currentClick.y)){
+				if(firstClick == null){
+					firstClick = currentClick;
+				} else{
+					var startX, startY, lengthX, lengthY;
+					if(firstClick.x > currentClick.x){
+						startX = currentClick.x;
+						lengthX = firstClick.x - currentClick.x;
+					} else{
+						startX = firstClick.x;
+						lengthX = currentClick.x - firstClick.x;
+					}
+			
+					if(firstClick.y > currentClick.y){
+						startY = currentClick.y;
+						lengthY = firstClick.y - currentClick.y;
+					} else{
+						startY = firstClick.y;
+						lengthY = currentClick.y - firstClick.y;
+					}
+					areasOfInterests.push({
+						index: areasOfInterests.length,
+						startX: startX,
+						lengthX: lengthX,
+						startY: startY,
+						lengthY: lengthY
+					});
+					console.log(areasOfInterests);
+					firstClick = null;
+				}
+			}
+		});
+		
+		network.on("doubleClick", function (params) {
+			areasOfInterests = [];
+		});
+</script>
+
+</html>
