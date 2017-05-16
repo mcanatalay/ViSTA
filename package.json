@@ -1,18 +1,29 @@
 {
-  "name": "vista-interface",
-  "version": "1.0.1",
-  "description": "ViSTA is a visualization attempt to Scanpath Trend Analysis.",
-  "main": "index.js",
-  "scripts": {
-    "test": "test mocha"
-  },
-  "keywords": [
-    "vista",
-    "sta"
-  ],
-  "author": "mcanatalay & serkankarabulut",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "mocha": "3.2.0"
-  }
+    "name": "vista",
+    "version": "1.1.0",
+    "description": "ViSTA is a visualization attempt to Scanpath Trend Analysis.",
+    "main": "index.js",
+    "scripts": {
+        "test": "test mocha",
+        "npm-clear": "rimraf WWW/dependencies/* && rimraf node_modules/*",
+        "npm-migrate": "rimraf WWW/dependencies/* && node dev/npm-migrate.js"
+    },
+    "keywords": [
+        "vista",
+        "sta"
+    ],
+    "author": "mcanatalay & serkankarabulut",
+    "license": "UNLICENSED",
+    "devDependencies": {
+        "mocha": "3.2.0",
+        
+        "rimraf": "latest",
+        "copy-dir": "latest"
+    },
+    "dependencies": {
+        "jquery": "3.1.1",
+        "materialize-css": "^0.98.2",
+        "vis": "4.19.1",
+        "html2canvas": "0.5.0-beta4"
+    }
 }

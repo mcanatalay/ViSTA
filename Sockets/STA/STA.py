@@ -82,6 +82,7 @@ def createSequences (Participants, myAoIs, errorRateArea):
 
         print "A sequence has been created for " +  keys[y]
         Sequences [keys[y]] =  sequence
+
     return Sequences
 
 def getNumberedSequence (Sequence, AoINames):
@@ -156,7 +157,6 @@ def calculateImportanceThreshold (mySequences):
 
     if len (commonAoIs) == 0:
         print "No shared instances!"
-        exit(1)
     
     minValueCounter = commonAoIs[0][1]
     for AoIdetails in commonAoIs:
@@ -294,7 +294,6 @@ def getValueableAoIs (AoIList):
 
 def convertData(response):
     jsonData = json.loads(response)
-    print jsonData
 
     rawDataList = jsonData['rawData']
     EyeTrackingData = {}
@@ -310,9 +309,8 @@ def convertData(response):
             ParticipantTrackingData += point["posX"] + "\t"
             ParticipantTrackingData += point["posY"] + "\t"
             ParticipantTrackingData += point["stimuliName"]
-        ParticipantTrackingData += "\n"
-        EyeTrackingData[int(dataIndex)] = ParticipantTrackingData
-        pList.append(int(dataIndex))
+        EyeTrackingData[dataIndex] = ParticipantTrackingData
+        pList.append(dataIndex)
         
     isFirstLine = True    
     areaDataArray = jsonData['areaData']
@@ -369,7 +367,8 @@ def STA(response):
 
     commonSequence = []
     for y in range (0, len(myFinalList)):
-        commonSequence.append(myFinalList[y][0])        
+        commonSequence.append(myFinalList[y][0])
+        
     return getAbstractedSequence(commonSequence)
 
 def processData(data):
@@ -405,6 +404,7 @@ while True:
                 else:
                     print >>sys.stderr, 'all data recived'
                     connection.sendall(json.dumps(STA(recivedData)))
+                    recivedData = ""
                     break
             else:
                 print >>sys.stderr, 'no more data from', client_address

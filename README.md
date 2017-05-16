@@ -10,6 +10,15 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.1.0:**
+
+> - Material User Interface implemented.
+> - Socket for STA improved.
+> - Visualization of STA improved.
+> - Filter mechanism introduced.
+> - Main ViSTA functions refactored in vista.js.
+> - NodeJS environment has been set.
+
 > **1.0.1:**
 
 > - Visualization of STA with **Directed-Graph Method** is implemented.
