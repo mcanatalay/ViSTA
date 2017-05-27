@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="nav-content">
-            <a id="dataSelectionTrigger" class="modal-trigger btn-floating btn-large halfway-fab waves-effect waves-light teal hide"  href="#dataSelectionModal">
+            <a id="dataSelectionTrigger" class="modal-trigger btn-floating btn-large halfway-fab waves-effect waves-light teal pulse hide"  href="#dataSelectionModal">
                 <i class="material-icons">list</i>
             </a>
         </div>
@@ -37,7 +37,10 @@
                           <li id="methodGazePath" data-type="GAZEPATH" class="tab col s2 disabled"><a class="active" href="#">Gaze Path</a></li>
                           <li id="methodSTAMap" data-type="STAMAP" class="tab col s2 disabled"><a href="#">STA Map</a></li>
                     </ul>
-                    <div id="map"></div>
+                    <div class="outer">
+                        <div id="background" style="z-index: 1;"></div>
+                        <div class="inner" id="map" style="z-index: 2;"></div>
+                    </div>
                     <div id="mapLoader" class="preloader-wrapper big active inner hide">
                       <div class="spinner-layer spinner-blue">
                         <div class="circle-clipper left">
@@ -177,6 +180,7 @@
     
     var discovery = true;
     var selectedStimuliName = "";
+    var selectedVisualMethod = "GAZEPATH";
     var prevVisualMethod = "";
     var filter = new Array();
     var vistaModule;
@@ -188,9 +192,10 @@
         } else if(response == "LOADERSTART"){
             showLoader();
         } else if(response == "LOADEREND"){
-            removeLoader();
-        } else if(response == "CHECKVISMETHOD"){
+            removeLoader();   
+        } else if(response == "UPDATEAOIS"){
             controlVisualMethods();
+            drawAOIs();
         }
     }
     
@@ -239,17 +244,20 @@
     
     function updateDataList(){
         $('#dataSelectionTrigger').removeClass("hide");
+        $('#dataSelectionTrigger').addClass('pulse');
         $('#dataSelectionList').html(createDataSelectionList());
     }
     
     function showLoader(){
         $('#mapLoader').removeClass("hide");
         $('#mapLoader').show();
+        $('#background').addClass("hide");
         $('#map').css("opacity","0");
     }
     
     function removeLoader(){
         $('#mapLoader').hide();
+        $('#background').removeClass("hide");
         $('#map').css("opacity","1");
     }
     
@@ -266,8 +274,21 @@
         $('#visualMethodSelector').find("li").removeClass("disabled");
         $('#visualMethodSelector').find("a").removeClass("active");
         $('#methodGazePath').find("a").addClass("active");
+        vistaModule.addAOIBlock(false);
         controlVisualMethods();
     }
+    
+    function clearAOIs(){
+        $('#map').parent().find('.aois').remove();
+    }
+    
+    function drawAOIs(){
+        if(selectedVisualMethod == "GAZEPATH"){
+            clearAOIs();
+            $('#map').parent().append(vistaModule.getAOIHTML());
+        }
+    }
+    
     
     $(document).ready(function(){
         $('.modal').modal();
@@ -310,12 +331,16 @@
         $('#visualMethodSelector').delegate("li","click",function(event){
             event.preventDefault();
             if(!$(this).hasClass("disabled") && selectedStimuliName != ""){
-                var selectedVisualMethod = $(this).data("type");
+                selectedVisualMethod = $(this).data("type");
                 if(selectedVisualMethod != prevVisualMethod){
                     if(selectedVisualMethod == "GAZEPATH"){
+                        drawAOIs();
                         vistaModule.showGazePath(selectedStimuliName);
+                        vistaModule.addAOIBlock(false);
                     } else if(selectedVisualMethod == "STAMAP"){
+                        clearAOIs();
                         vistaModule.showSTAMap(selectedStimuliName,settings.sta,filter[selectedStimuliName]);
+                        vistaModule.addAOIBlock(true);
                     }
                     prevVisualMethod = selectedVisualMethod;
                     $(this).parent().find("a").removeClass("active");
@@ -330,6 +355,10 @@
                 event.preventDefault();
             }
             
+        });
+        
+        $('#dataSelectionTrigger').on('click',function(){
+           $(this).removeClass('pulse'); 
         });
         
         

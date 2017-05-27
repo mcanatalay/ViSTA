@@ -34,7 +34,8 @@ vista = function(
         AOIs: new Array(),
         categories: new Array(),
         main: new Array(),
-        firstClick: null
+        firstClick: null,
+        AOIBlock: false
     };
         
     /* Global Variables ENDS */
@@ -107,7 +108,8 @@ vista = function(
 
             if(checkCategoryName(categoryName)){
                 if(!isCategoryExist(categoryName)){
-                    data.categories.push({name: categoryName, title: null, img: null, participants: [fileID]});
+                    data.categories.push({name: categoryName, title: null, img: null, height: 0,
+                        color: getRandomColor(), participants: [fileID]});
                     data.main[categoryName] = new vis.DataSet();
                     fetchPageTitleToData(categoryName);
                 } else if(!isParticipantExistInCategory(categoryName,fileID)){
@@ -122,6 +124,18 @@ vista = function(
             lastCategoryName = categoryName;
         }
         listener("DATACHANGE");
+    }
+    
+    function filterStimuli(stimuliInstant,filter){
+        var flag = true;
+        
+        if(filter.participants.indexOf(stimuliInstant.participantID) != -1){
+            flag = true;
+        } else{
+            flag = false;
+        }
+        
+        return flag;
     }
     
     /* Data Module Functions ENDS */
@@ -219,7 +233,7 @@ vista = function(
          value: toRealValue(parseInt(stimuliInstant[data.headerConvention[2]])),
          x: toRealX(parseInt(stimuliInstant[data.headerConvention[3]])),
          y: toRealY(parseInt(stimuliInstant[data.headerConvention[4]])),
-         group: parseInt(stimuliInstant["participantID"])
+         group: parseInt(stimuliInstant["participantID"]),
        };
     }
     
@@ -252,12 +266,17 @@ vista = function(
             }
             ).then(function(canvas) {
                 var img = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-                $('#map').css('background-image', 'url(' + img + ')');
+                $('#background').height(toRealY(canvas.height));
+                $('#background').css('background-image', 'url(' + img + ')');
                 data.categories[categoryIndex].img = img;
+                data.categories[categoryIndex].height = canvas.height;
+                
                 listener("LOADEREND");
             });
         } else{
-            $('#map').css('background-image', 'url(' + data.categories[categoryIndex].img + ')');
+            $('#background').height(toRealY(data.categories[categoryIndex]));
+            $('#background').css('background-image', 'url(' + data.categories[categoryIndex].img + ')');
+            
             listener("LOADEREND");
         }
     }
@@ -283,8 +302,10 @@ vista = function(
     function isPointAvailable(x,y){
         for(var i = 0; data.AOIs.length > i; i++){
             var area = data.AOIs[i];
+            var endX = area.startX + area.lengthX;
+            var endY = area.startY + area.lengthY;
             if(x > area.startX && y > area.startY &&
-                x < area.endX && y < area.endY){
+                x < endX && y < endY){
                 return false;
             } else{
                 return true;
@@ -293,16 +314,117 @@ vista = function(
         return true;
     }
     
-    function filterStimuli(stimuliInstant,filter){
-        var flag = true;
-        
-        if(filter.participants.indexOf(stimuliInstant.participantID) != -1){
-            flag = true;
-        } else{
-            flag = false;
+    function generateAOIIndex(){
+        var max = 0;
+        for(var i = 0; data.AOIs.length > i; i++){
+            if(data.AOIs[i].index > max){
+                max = data.AOIs[i].index;
+            }
         }
+        return max+1;
+    }
+    
+    function getAOIIndex(index){
+        var i;
+        for(i = 0; data.AOIs.length > i && data.AOIs[i].index != index; i++);
         
-        return flag;
+        return (i != data.AOIs.length)? i:-1;
+    }
+    
+    this.addAOIBlock = function(AOIBlock){
+        data.AOIBlock = AOIBlock;
+    }
+    
+    function addAOI(currentClick){
+        if(isPointAvailable(toDataX(currentClick.x), toDataY(currentClick.y))){
+            if(data.firstClick == null){
+                data.firstClick = currentClick;
+            } else{
+                var startX, startY, lengthX, lengthY;
+                if(data.firstClick.x > currentClick.x){
+                    startX = currentClick.x;
+                    lengthX = data.firstClick.x - currentClick.x;
+                } else{
+                    startX = data.firstClick.x;
+                    lengthX = currentClick.x - data.firstClick.x;
+                }
+
+                if(data.firstClick.y > currentClick.y){
+                    startY = currentClick.y;
+                    lengthY = data.firstClick.y - currentClick.y;
+                } else{
+                    startY = data.firstClick.y;
+                    lengthY = currentClick.y - data.firstClick.y;
+                }
+                
+                var rgba = getRandomColor().slice(0, -1);
+                rgba += ", 0.7)";
+                                                
+                data.AOIs.push({
+                    index: generateAOIIndex(),
+                    startX: toDataX(startX),
+                    lengthX: toDataX(lengthX),
+                    startY: toDataY(startY),
+                    lengthY: toDataY(lengthY),
+                    rgba: rgba
+                });
+                
+                listener("UPDATEAOIS");
+                
+                data.firstClick = null;                
+            }
+        }
+    }
+    
+    function removeAOI(index){
+        data.AOIs.splice(getAOIIndex(index),1);
+        listener("UPDATEAOIS");
+    }
+    
+    this.removeAOIs = function(){
+        data.AOIs = [];
+        listener("UPDATEAOIS");
+    }
+    
+    this.getAOIHTML = function(){
+        var HTML = "";
+        for(var i = 0; data.AOIs.length > i; i++){
+            var aoi = data.AOIs[i];
+            HTML +=
+                    '<div class="aois inner card-panel hoverable" '+
+                    'style="left: ' + toRealX(aoi.startX) + '; '+
+                    'top: ' + toRealY(aoi.startY) + '; '+
+                    'width: ' + toRealX(aoi.lengthX) + '; '+
+                    'height: ' + toRealY(aoi.lengthY) + '; '+
+                    'z-index: 3; background-color:' + aoi.rgba + '; " ' +
+                    'data-index="' + aoi.index + '">'+
+                    '<h5 class="center-align">' + aoi.index + '</h5>'+
+                    '</div>';
+        }  
+        
+        return HTML;
+    }
+
+    function getRandomColor(){
+        var colors = [
+            "red", "pink", "purple", "deep-purple", "indigo", "blue",
+            "light-blue", "cyan", "teal", "green", "light-green", "lime",
+            "yellow", "amber", "orange", "deep-orange"
+        ];
+        var tones = [
+            "lighten-5", "lighten-4", "lighten-3", "lighten-2", "lighten-1",
+            "darken-1", "darken-2", "darken-3", "darken-4",
+            "accent-1", "accent-2", "accent-3", "accent-4"
+        ];
+        
+        var color = colors[Math.floor((Math.random() * 16))];
+        var tone = tones[Math.floor((Math.random() * 13))];
+
+        $('#map').append('<div id="tempforcolor" class="hidden '+color+' '+tone+'"></div>');
+        var rgb = $('#tempforcolor').css("background-color");
+        $('#tempforcolor').remove();
+        
+        return rgb;
     }
     
     /* Misc. Module Functions ENDS */
@@ -311,7 +433,9 @@ vista = function(
     
     /* STA Module Functions STARTS */
     this.showSTAMap = function(stimuliName, settings, filter){
+        listener("LOADERSTART");
         createVisualMap(createSTAMap(getSTAData(stimuliName,settings,filter)));
+        listener("LOADEREND");
     };
     
     this.isSTAMAPApplicable = function(){
@@ -321,7 +445,7 @@ vista = function(
         return false;
     };
 
-    var createSTAMap = function(staSequence){
+    function createSTAMap(staSequence){
         var areaWeights = new Array();
         var areaNodes = new Array();
         var areaEdges = new vis.DataSet();
@@ -330,8 +454,10 @@ vista = function(
         }
 
         for(var i = 0; staSequence.length > i; i++){
-            areaWeights[parseInt(staSequence[i])]++;
+            var index = getAOIIndex(parseInt(staSequence[i]));
+            areaWeights[index]++;
             if(staSequence.length > i+1){
+                var indexNext = getAOIIndex(parseInt(staSequence[i+1]));
                 var id = staSequence[i] + "-" + staSequence[i+1];
                 var label = areaEdges.get(id);
                 if(label == null){
@@ -339,7 +465,7 @@ vista = function(
                 } else{
                     label = label.label + ", " + String(i+1);
                 }
-                areaEdges.update({id: id, from: parseInt(staSequence[i]), to: parseInt(staSequence[i+1]),
+                areaEdges.update({id: id, from: index, to: indexNext,
                     label: label, arrows: "to",
                     smooth: {enabled: true, type: "continuous"}
                 });
@@ -399,53 +525,16 @@ vista = function(
         offset: {x: -1*size.width/2, y: -1*size.height/2},
         scale: 1
     });
-
-
+    
     map.on("click", function (params) {
-        var currentClick = params.pointer.canvas;
-        if(isPointAvailable(currentClick.x, currentClick.y)){
-            if(data.firstClick == null){
-                data.firstClick = currentClick;
-            } else{
-                var startX, startY, lengthX, lengthY;
-                if(data.firstClick.x > currentClick.x){
-                    startX = currentClick.x;
-                    lengthX = data.firstClick.x - currentClick.x;
-                } else{
-                    startX = data.firstClick.x;
-                    lengthX = currentClick.x - data.firstClick.x;
-                }
-
-                if(data.firstClick.y > currentClick.y){
-                    startY = currentClick.y;
-                    lengthY = data.firstClick.y - currentClick.y;
-                } else{
-                    startY = data.firstClick.y;
-                    lengthY = currentClick.y - data.firstClick.y;
-                }
-                
-                data.AOIs.push({
-                    index: data.AOIs.length,
-                    startX: toDataX(startX),
-                    lengthX: toDataX(lengthX),
-                    startY: toDataY(startY),
-                    lengthY: toDataY(lengthY)
-                });
-                console.log(data.AOIs);
-                data.firstClick = null;
-                
-                listener("CHECKVISMETHOD");
-            }
+        if(!data.AOIBlock){
+            addAOI(params.pointer.canvas);
         }
     });
-
-    map.on("doubleClick", function (params) {
-        data.firstClick = [];
-    });
     
-    this.removeAOIs = function(){
-        data.AOIs = [];
-    }
+    $('#map').parent().delegate('.aois','dblclick',function(){
+        removeAOI($(this).data("index"));
+    });
     
     /* Function Calls ENDS */
 };

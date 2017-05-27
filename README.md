@@ -10,6 +10,12 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.1.5:**
+
+> - New data indicator added for stimuli list.
+> - Visual components of AOIs are added.
+> - Visualization method selection improved.
+
 > **1.1.0:**
 
 > - Material User Interface implemented.
