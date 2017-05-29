@@ -4,6 +4,8 @@ ViSTA
 
 **ViSTA** is short for Visualization of STA algorithm. STA algorithm is developed by Sukru Eraslan.
 
+Documents are [on GitHub](https://mcanatalay.github.io/ViSTA/index.html), you can easily reach online version from here. 
+
 ----------
 Versions
 -------------
