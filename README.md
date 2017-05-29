@@ -10,6 +10,10 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.1.6:**
+
+> - Documents added.
+
 > **1.1.5:**
 
 > - New data indicator added for stimuli list.
