@@ -274,7 +274,7 @@ vista = function(
                 listener("LOADEREND");
             });
         } else{
-            $('#background').height(toRealY(data.categories[categoryIndex]));
+            $('#background').height(toRealY(data.categories[categoryIndex].height));
             $('#background').css('background-image', 'url(' + data.categories[categoryIndex].img + ')');
             
             listener("LOADEREND");
@@ -358,6 +358,7 @@ vista = function(
                 }
                 
                 var rgba = getRandomColor().slice(0, -1);
+                rgba = rgba.replace("rgb","rgba");
                 rgba += ", 0.7)";
                                                 
                 data.AOIs.push({

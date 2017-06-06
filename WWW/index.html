@@ -271,6 +271,7 @@
 
     function resetVisualMethods(){
         prevVisualMethod = "GAZEPATH";
+        selectedVisualMethod = "GAZEPATH";
         $('#visualMethodSelector').find("li").removeClass("disabled");
         $('#visualMethodSelector').find("a").removeClass("active");
         $('#methodGazePath').find("a").addClass("active");
@@ -370,6 +371,7 @@
         $('#mapLoader').css("top",(size.height-$('#mapLoader').height())/2);
 
         vistaModule = new vista(listener,mapContainer,size);
+        vistaModule.addAOIBlock(true);
         $('#menuTriggerTab').tapTarget('open');
     });
 </script>

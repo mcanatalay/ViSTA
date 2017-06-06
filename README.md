@@ -12,6 +12,12 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.1.7:**
+
+> - Minor adjustments on AOI block and visualization.
+> - Minor adjustments on visualization method selection.
+> - Minor adjustments on background image display.
+
 > **1.1.6:**
 
 > - Documents added.
