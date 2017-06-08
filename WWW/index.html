@@ -12,20 +12,23 @@
     <script src="source/vista.js"></script>
     <link rel="stylesheet" href="source/vista.css">
     <meta charset="utf-8"/>
+    <link rel="shortcut icon" href="fav.ico" />
     <title>ViSTA - Main</title>
 </head>
 
 <body>
-    <nav class="nav-extended">
+    <nav class="nav-extended light-blue darken-1">
         <div class="nav-wrapper">
-            <div class="col s12">
-                <label class="breadcrumb">ViSTA</label>
-                    <a href="#!" class="breadcrumb">Map</a>
+            <div style="padding: 5px;" class="col s12">
+                <div id="bannerimage"></div>
             </div>
         </div>
         <div class="nav-content">
+            <a href="" download="save.png" id="imageDownloadTrigger" style="margin-right: 60px;" class="btn-floating btn-large halfway-fab waves-effect waves-light teal amber hide">
+                <i class="material-icons unselectable">get_app</i>
+            </a>
             <a id="dataSelectionTrigger" class="modal-trigger btn-floating btn-large halfway-fab waves-effect waves-light teal pulse hide"  href="#dataSelectionModal">
-                <i class="material-icons">list</i>
+                <i class="material-icons unselectable">list</i>
             </a>
         </div>
     </nav>
@@ -87,19 +90,19 @@
 	</div>
     
     <div class="fixed-action-btn">
-	<a id="menuTrigger" class="btn-floating btn-large red">
-            <i class="large material-icons">settings</i>
+	<a id="menuTrigger" class="btn-floating btn-large green accent-4">
+            <i class="large material-icons unselectable">settings</i>
 	</a>
 	<ul>
             <li>
 		<label id="dataAddTrigger" class="btn-floating blue waves-effect waves-light">
                     <input style="display: none;" type="file" name="file[]" onchange='vistaModule.readFile(this)' multiple />
-                    <i class="material-icons">add</i>
+                    <i class="material-icons unselectable">add</i>
 		</label>
             </li>
             <li>
 		<a id="managementTrigger" class="modal-trigger btn-floating yellow waves-effect waves-light" href="#managementModal">
-                    <i class="material-icons">build</i>
+                    <i class="material-icons unselectable">build</i>
 		</a>
             </li>
 	</ul>
@@ -113,7 +116,7 @@
             </ul>
         </div>
         <div class="modal-footer">
-            <a id="dataSelectionButton" href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Draw</a>
+            <a id="dataSelectionButton" href="#" class="modal-action modal-close waves-effect waves-green btn-flat ">Draw</a>
         </div>
     </div>
     
@@ -122,30 +125,30 @@
             <h4>Settings</h4>
             <p>You can manage ViSTA here.</p>
             <div class="row">
-                <form class="col s12">
+                <form id="settingsForm" class="col s12">
                     <div class="row">
                         <div class="input-field col s6">
-                            <input id="setting_width" type="text" class="validate">
+                            <input id="setting_width" type="text">
                             <label for="setting_width">Data Width</label>
                         </div>
                         <div class="input-field col s6">
-                            <input id="setting_height" type="text" class="validate">
+                            <input id="setting_height" type="text">
                             <label for="setting_height">Data Height</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s6">
-                            <input id="setting_inch" type="text" class="validate">
+                            <input id="setting_inch" type="text">
                             <label for="setting_inch">Screen Inch</label>
                         </div>
                         <div class="input-field col s6">
-                            <input id="setting_distance" type="text" class="validate">
+                            <input id="setting_distance" type="text">
                             <label for="setting_distance">Distance to Tracker</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="setting_daccuracy" type="text" class="validate">
+                            <input id="setting_daccuracy" type="text">
                             <label for="setting_daccuracy">Degree of Accuracy</label>
                         </div>
                     </div>
@@ -153,11 +156,11 @@
             </div>
         </div>
         <div class="modal-footer">
-            <a id="managementButton" href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Save</a>
+            <a id="managementButton" href="#" class="modal-action modal-close waves-effect waves-green btn-flat ">Save</a>
         </div>
     </div>
     
-    <div id="menuTriggerTab" style="margin: 50px;" class="tap-target" data-activates="menuTrigger">
+    <div id="menuTriggerTab" style="margin: 50px;" class="tap-target green accent-4" data-activates="menuTrigger">
         <div class="tap-target-content">
             <div style="margin-top: -230px;">
                 <h5>ViSTA Menu</h5>
@@ -187,6 +190,7 @@
     var mapContainer = document.getElementById('map');
     var listContainer = "map";
     var listener = function(response){
+        
         if(response == "DATACHANGE"){
             updateDataList();
         } else if(response == "LOADERSTART"){
@@ -196,6 +200,8 @@
         } else if(response == "UPDATEAOIS"){
             controlVisualMethods();
             drawAOIs();
+        } else if(response == "IMGDOWNLOAD"){
+            showDownloadLink(vistaModule.getDownloadImage());
         }
     }
     
@@ -213,10 +219,10 @@
                     '<div class="collapsible-header">';
             if(element["title"] == null){
                 liHTML +=
-                        '<i class="material-icons">filter_drama</i>'+element["name"]+'</div>';
+                        '<i class="material-icons unselectable">filter_drama</i>'+element["name"]+'</div>';
             } else{
                 liHTML +=
-                        '<i class="material-icons">filter_drama</i>'+element["title"]+'</div>';
+                        '<i class="material-icons unselectable">filter_drama</i>'+element["title"]+'</div>';
             }
                 liHTML +=
                         '<div style="padding: 10px;" class="collapsible-body">'+
@@ -252,6 +258,7 @@
         $('#mapLoader').removeClass("hide");
         $('#mapLoader').show();
         $('#background').addClass("hide");
+        $('#imageDownloadTrigger').addClass("hide");
         $('#map').css("opacity","0");
     }
     
@@ -259,6 +266,12 @@
         $('#mapLoader').hide();
         $('#background').removeClass("hide");
         $('#map').css("opacity","1");
+        vistaModule.createDownloadImage(selectedStimuliName);
+    }
+    
+    function showDownloadLink(imgLink){
+        $('#imageDownloadTrigger').attr("href",imgLink);
+        $('#imageDownloadTrigger').removeClass("hide");
     }
     
     function controlVisualMethods(){
@@ -362,6 +375,38 @@
            $(this).removeClass('pulse'); 
         });
         
+        $('#managementButton').on('click',function(){
+            if($('#setting_width').val() != ""){
+                settings.sta.resX = $('#setting_width').val();
+            } else{
+                $('#setting_width').val(settings.sta.resX);
+            }
+            
+            if($('#setting_height').val() != ""){
+                settings.sta.resY = $('#setting_height').val();
+            } else{
+                $('#setting_height').val(settings.sta.resY);
+            }
+            
+            if($('#setting_inch').val() != ""){
+                settings.sta.sizeOfScreen = $('#setting_inch').val();
+            } else{
+                $('#setting_inch').val(settings.sta.sizeOfScreen);
+            }
+            
+            if($('#setting_distance').val() != ""){
+                settings.sta.distance = $('#setting_distance').val();
+            } else{
+                $('#setting_distance').val(settings.sta.distance);
+            }
+            
+            if($('#setting_daccuracy').val() != ""){
+                settings.sta.daccuracy = $('#setting_daccuracy').val();
+            } else{
+                $('#setting_daccuracy').val(settings.sta.daccuracy);
+            }
+        });
+        
         
         size.width = $('#map').width();
         size.height = size.dataH * (size.width / size.dataW);
@@ -373,6 +418,12 @@
         vistaModule = new vista(listener,mapContainer,size);
         vistaModule.addAOIBlock(true);
         $('#menuTriggerTab').tapTarget('open');
+        
+        $('#setting_width').val(settings.sta.resX);
+        $('#setting_height').val(settings.sta.resY);
+        $('#setting_inch').val(settings.sta.sizeOfScreen);
+        $('#setting_distance').val(settings.sta.distance);
+        $('#setting_daccuracy').val(settings.sta.daccuracy);
     });
 </script>
 

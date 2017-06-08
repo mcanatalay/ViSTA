@@ -8,12 +8,12 @@ from random import randint
 from pylab import *
 
 # STA Algorithm - PARAMETERS
-EyeTrackingURL = "http://ncc.metu.edu.tr/" #Provide the link for the related page
-degreeOfAccuracy = 0.5	#Provide the degree of accuracy of an eye tracker, such as 0.5.
-distanceBetweenEyeTrackerAndParticipants = 60	#Provide the distance between the eye tracker and the participants in centimeters, such as 60.
-resolutionOfScreenX = 1280 #Provide the X resolution of the screen, such as 1280.
-resolutionOfScreenY = 1024	#Provide the Y resolution of the screen, such as 1024.
-sizeOfScreen = 17	#Provide the size of the screen in inches, such as 17.
+# EyeTrackingURL = "http://ncc.metu.edu.tr/" #Provide the link for the related page
+# degreeOfAccuracy = 0.5	#Provide the degree of accuracy of an eye tracker, such as 0.5.
+# distanceBetweenEyeTrackerAndParticipants = 60	#Provide the distance between the eye tracker and the participants in centimeters, such as 60.
+# resolutionOfScreenX = 1280 #Provide the X resolution of the screen, such as 1280.
+# resolutionOfScreenY = 1024	#Provide the Y resolution of the screen, such as 1024.
+# sizeOfScreen = 17	#Provide the size of the screen in inches, such as 17.
 
 def getParticipants (pList, EyeTrackingData):
     Participants = {}
@@ -325,16 +325,26 @@ def convertData(response):
         SegmentationData += str(int(area["lengthY"])) + "\t"
         SegmentationData += str(area["index"])
         isFirstLine = False
-
-    return pList, EyeTrackingData, SegmentationData
+    
+    settingsData = jsonData['settings']
+    settings = {}
+    settings['degreeOfAccuracy'] = float(settingsData['daccuracy']);
+    settings['distanceBetweenEyeTrackerAndParticipants'] = int(settingsData['distance'])
+    settings['resolutionOfScreenX'] = int(settingsData['resX'])
+    settings['resolutionOfScreenY'] = int(settingsData['resY'])
+    settings['sizeOfScreen'] = int(settingsData['sizeOfScreen'])
+    
+    return pList, EyeTrackingData, SegmentationData, settings
 
 # Preliminary Stage
 def STA(response):
-    pList, EyeTrackingData, SegmentationData = convertData(response)
+    pList, EyeTrackingData, SegmentationData, settings = convertData(response)
     myParticipants= getParticipants (pList, EyeTrackingData)
     myAoIs = getAoIs(SegmentationData)
-    
-    myErrorRateArea = calculateErrorRateArea(degreeOfAccuracy, distanceBetweenEyeTrackerAndParticipants, resolutionOfScreenX, resolutionOfScreenY, sizeOfScreen)
+
+    myErrorRateArea = calculateErrorRateArea(settings['degreeOfAccuracy'],
+        settings['distanceBetweenEyeTrackerAndParticipants'],
+        settings['resolutionOfScreenX'], settings['resolutionOfScreenY'], settings['sizeOfScreen'])
     mySequences = createSequences (myParticipants, myAoIs, myErrorRateArea)
 
     keys = mySequences.keys()

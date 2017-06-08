@@ -12,6 +12,16 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.2.0:**
+
+> - Minor adjustments on color schema.
+> - Minor adjustments on AOI visualization.
+> - ViSTA banner & icon added.
+> - Download support for ViSTA image implemented.
+> - STA Socket improved by added external settings option.
+> - Settings menu activated.
+> - Sample data added.
+
 > **1.1.7:**
 
 > - Minor adjustments on AOI block and visualization.

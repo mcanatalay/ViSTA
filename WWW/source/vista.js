@@ -35,7 +35,12 @@ vista = function(
         categories: new Array(),
         main: new Array(),
         firstClick: null,
-        AOIBlock: false
+        AOIBlock: false,
+        download: {
+            image: null,
+            background: new Image(),
+            map: new Image()
+        }
     };
         
     /* Global Variables ENDS */
@@ -399,7 +404,7 @@ vista = function(
                     'height: ' + toRealY(aoi.lengthY) + '; '+
                     'z-index: 3; background-color:' + aoi.rgba + '; " ' +
                     'data-index="' + aoi.index + '">'+
-                    '<h5 class="center-align">' + aoi.index + '</h5>'+
+                    '<h5 class="unselectable center-align">' + aoi.index + '</h5>'+
                     '</div>';
         }  
         
@@ -427,6 +432,26 @@ vista = function(
         
         return rgb;
     }
+    
+    this.createDownloadImage = function(stimuliName){
+        data.download.background.src = data.categories[findCategoryIndex(stimuliName)].img;
+        data.download.map.src = $('#map').find('canvas')[0].toDataURL("image/png").replace("image/png", "image/octet-stream");
+        data.download.map.onload = function(){
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext("2d");
+            canvas.height = data.download.background.height;
+            canvas.width = data.download.background.width;
+
+            ctx.drawImage(data.download.background, 0, 0);
+            ctx.drawImage(data.download.map, 0, 0);
+            data.download.img = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            listener('IMGDOWNLOAD');
+        };
+    };
+    
+    this.getDownloadImage = function(){
+        return data.download.img;
+    };
     
     /* Misc. Module Functions ENDS */
     
