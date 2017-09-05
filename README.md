@@ -12,6 +12,11 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.2.1:**
+
+> - Improvement on background fetching process.
+> - Error correction on download process.
+
 > **1.2.0:**
 
 > - Minor adjustments on color schema.

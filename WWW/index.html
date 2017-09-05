@@ -409,7 +409,7 @@
         
         
         size.width = $('#map').width();
-        size.height = size.dataH * (size.width / size.dataW);
+        size.height = size.width * (size.dataH / size.dataW);
         $('#map').height(size.height);
         
         $('#mapLoader').css("left",(size.width-$('#mapLoader').width())/2);

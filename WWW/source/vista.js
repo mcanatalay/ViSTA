@@ -270,8 +270,17 @@ vista = function(
                 height: size.dataH,
             }
             ).then(function(canvas) {
-                var img = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-                $('#background').height(toRealY(canvas.height));
+                //Cropping
+                var cropCanvas = document.createElement('canvas');
+                var cropContext = cropCanvas.getContext('2d');
+                cropCanvas.width = size.width;
+                cropCanvas.height = size.height;
+                
+                var cropHeight = (canvas.height > size.height)? size.height:canvas.height;
+                cropContext.drawImage(canvas, 0, 0, canvas.width, cropHeight, 0, 0, size.width, size.height);
+                
+                var img = cropCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+                $('#background').height(size.height);
                 $('#background').css('background-image', 'url(' + img + ')');
                 data.categories[categoryIndex].img = img;
                 data.categories[categoryIndex].height = canvas.height;
@@ -439,8 +448,8 @@ vista = function(
         data.download.map.onload = function(){
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext("2d");
-            canvas.height = data.download.background.height;
-            canvas.width = data.download.background.width;
+            canvas.height = size.height;
+            canvas.width = size.width;
 
             ctx.drawImage(data.download.background, 0, 0);
             ctx.drawImage(data.download.map, 0, 0);
