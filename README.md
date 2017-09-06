@@ -12,6 +12,11 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.2.2:**
+
+> - Original size on download image.
+> - Refreshes on resize to prevent error.
+
 > **1.2.1:**
 
 > - Improvement on background fetching process.

@@ -6,6 +6,8 @@ vista = function(
     
     /* Global Variables STARTS */
     var mapOptions = {
+        height: '100%',
+        width: '100%',
         nodes: {
             shape: 'dot',
             borderWidth: 2
@@ -36,11 +38,7 @@ vista = function(
         main: new Array(),
         firstClick: null,
         AOIBlock: false,
-        download: {
-            image: null,
-            background: new Image(),
-            map: new Image()
-        }
+        download: null
     };
         
     /* Global Variables ENDS */
@@ -443,23 +441,26 @@ vista = function(
     }
     
     this.createDownloadImage = function(stimuliName){
-        data.download.background.src = data.categories[findCategoryIndex(stimuliName)].img;
-        data.download.map.src = $('#map').find('canvas')[0].toDataURL("image/png").replace("image/png", "image/octet-stream");
-        data.download.map.onload = function(){
+        var backgroundImg = new Image();
+        backgroundImg.src = data.categories[findCategoryIndex(stimuliName)].img;
+        
+        backgroundImg.onload = function(){
+            var mapImg = $('#map').find('canvas')[0];
+
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext("2d");
-            canvas.height = size.height;
-            canvas.width = size.width;
+            canvas.height = size.dataH;
+            canvas.width = size.dataW;
 
-            ctx.drawImage(data.download.background, 0, 0);
-            ctx.drawImage(data.download.map, 0, 0);
-            data.download.img = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            ctx.drawImage(backgroundImg, 0, 0, size.width, size.height, 0, 0, size.dataW, size.dataH);
+            ctx.drawImage(mapImg, 0, 0, mapImg.width, mapImg.height, 0, 0, size.dataW, size.dataH);
+            data.download = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
             listener('IMGDOWNLOAD');
-        };
+        }
     };
     
     this.getDownloadImage = function(){
-        return data.download.img;
+        return data.download;
     };
     
     /* Misc. Module Functions ENDS */
@@ -555,6 +556,7 @@ vista = function(
     /* Other Modules Functions ENDS */
     
     /* Function Calls  STARTS */
+    map.setSize(size.width, size.height);
     map.moveTo({
         position: {x: 0, y:0},
         offset: {x: -1*size.width/2, y: -1*size.height/2},
