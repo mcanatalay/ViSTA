@@ -6,8 +6,6 @@ vista = function(
     
     /* Global Variables STARTS */
     var mapOptions = {
-        height: '100%',
-        width: '100%',
         nodes: {
             shape: 'dot',
             borderWidth: 2
@@ -197,7 +195,11 @@ vista = function(
     
     this.showGazePath = function(stimuliName, filter = null){
         listener("LOADERSTART");
-        fetchBackgroundImage(stimuliName);
+        if(filter != null && filter.imgurl != null){
+            fetchBackgroundImage(stimuliName, filter.imgurl);
+        } else{
+            fetchBackgroundImage(stimuliName);
+        }
         createVisualMap(createGazePath(stimuliName, filter));        
     };
     
@@ -258,9 +260,38 @@ vista = function(
     
     /* Misc. Module Functions STARTS */
         
-    function fetchBackgroundImage(imgAddress){
+    function fetchBackgroundImage(imgAddress, imgURL = null){
         var categoryIndex = findCategoryIndex(imgAddress);
-        if(data.categories[categoryIndex].img == null){
+        
+        if(data.categories[categoryIndex].img != null){
+            $('#background').height(size.height);
+            $('#background').css('background-image', 'url(' + data.categories[categoryIndex].img + ')');
+            
+            listener("LOADEREND");
+            
+        } else if(imgURL != null){
+            var cropIMG = new Image();
+            cropIMG.crossOrigin = "Anonymous";
+            cropIMG.src = imgURL;
+            cropIMG.onload = function(){             
+                var cropCanvas = document.createElement('canvas');
+                var cropContext = cropCanvas.getContext('2d');
+                cropCanvas.width = size.width;
+                cropCanvas.height = size.height;
+                
+                var cropHeight = (cropIMG.height > size.height)? size.height:cropIMG.height;
+                cropContext.drawImage(cropIMG, 0, 0, cropIMG.width, cropHeight, 0, 0, size.width, size.height);
+                
+                var img = cropCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+                $('#background').height(size.height);
+                $('#background').css('background-image', 'url(' + img + ')');
+                data.categories[categoryIndex].img = img;
+                data.categories[categoryIndex].height = cropIMG.height;
+                
+                listener("LOADEREND");
+            }
+            
+        } else if(data.categories[categoryIndex].img == null){
             html2canvas(imgAddress,{
                 proxy: "proxy.php",
                 allowTaint: true,
@@ -286,10 +317,6 @@ vista = function(
                 listener("LOADEREND");
             });
         } else{
-            $('#background').height(toRealY(data.categories[categoryIndex].height));
-            $('#background').css('background-image', 'url(' + data.categories[categoryIndex].img + ')');
-            
-            listener("LOADEREND");
         }
     }
     
@@ -510,8 +537,8 @@ vista = function(
 
         for(var i = 0; areaWeights.length > i; i++){
             var area = data.AOIs[i];
-            var x = area.startX + area.lengthX/2;
-            var y = area.startY + area.lengthY/2;
+            var x = toRealX(area.startX + area.lengthX/2);
+            var y = toRealY(area.startY + area.lengthY/2);
             areaNodes.push({id: i, x: x, y: y, value: areaWeights[i], group: i, label: i});
         }
 
@@ -556,7 +583,6 @@ vista = function(
     /* Other Modules Functions ENDS */
     
     /* Function Calls  STARTS */
-    map.setSize(size.width, size.height);
     map.moveTo({
         position: {x: 0, y:0},
         offset: {x: -1*size.width/2, y: -1*size.height/2},

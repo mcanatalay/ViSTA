@@ -12,6 +12,11 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.2.3:**
+
+> - Image URL providing feature implemented.
+> - Shift on STA MAP solved.
+
 > **1.2.2:**
 
 > - Original size on download image.

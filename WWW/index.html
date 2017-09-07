@@ -212,7 +212,8 @@
             var element = list[i];
             
             filter[element["name"]] = {
-                participants: element["participants"]
+                participants: element["participants"],
+                imgurl: null
             };
             
             var liHTML = '<li data-stimuliname="'+element["name"]+'">'+
@@ -233,12 +234,17 @@
             for(var j = 0; element["participants"].length > j; j++){
                 var innerElement = element["participants"][j];
                 liHTML += '<div class="input-field col s3" id="">'+
-                        '<input type="checkbox" value="1" data-name="'+element["name"]+'" data-participant="'+innerElement+'" id="check-'+i+'-'+innerElement+'" checked/>'+
+                        '<input type="checkbox" value="1" class="participant" data-name="'+element["name"]+'" data-participant="'+innerElement+'" id="check-'+i+'-'+innerElement+'" checked/>'+
                             '<label for="check-'+i+'-'+innerElement+'">Participant '+innerElement+'</label>'+
                         '</div>';
             }
 
-            liHTML +=           '</div>'+
+            liHTML +=               
+                                    '<div style="margin-top: 20px;" class="input-field col s12">'+
+                                        '<input class="imgurl" placeholder="Image URL" data-name="'+element["name"]+'" id="'+element["name"]+'_URL" type="text">'+
+                                        '<label for="'+element["name"]+'_URL">Image URL</label>'+
+                                    '</div>'+
+                                '</div>'+
                             '</form>'+
                         '</div>'+
                       '</li>';
@@ -325,7 +331,7 @@
             vistaModule.showGazePath(selectedStimuliName,filter[selectedStimuliName]);
         });
         
-        $('#dataSelectionList').delegate("input","click",function() {
+        $('#dataSelectionList').delegate(".participant","click",function() {
             if($(this).val() == 1){
                 var participants = new Array();
                 var index = filter[$(this).data("name")].participants.indexOf($(this).data("participant"));
@@ -339,6 +345,16 @@
             } else{
                 filter[$(this).data("name")].participants.push($(this).data("participant"));
                 $(this).val(1);
+            }
+        });
+        
+        $('#dataSelectionList').delegate(".imgurl","keyup",function() {
+            var imgurl = $(this).val();
+
+            if(imgurl != "" && imgurl != " " && imgurl != null && imgurl != $(this).data("name")){
+                filter[$(this).data("name")].imgurl = imgurl;
+            } else{
+                filter[$(this).data("name")].imgurl = null;
             }
         });
         
