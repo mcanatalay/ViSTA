@@ -1,7 +1,8 @@
 vista = function(
         listener,
         mapContainer,
-        size         
+        size,
+        staAddress
         ){
     
     /* Global Variables STARTS */
@@ -568,8 +569,9 @@ vista = function(
         
         $.ajax({
             type: "POST",
-            url: 'sockets/client.php',
+            url: staAddress,
             data: {jsondata: jsondata},
+            crossDomain: true,
             success: function(response){
                 dataResponse = response;
             },

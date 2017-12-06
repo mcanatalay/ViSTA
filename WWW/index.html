@@ -178,7 +178,8 @@
             distance: 60,
             resX: 1280,
             resY: 1024
-        }
+        },
+        staAddress: "http://127.0.0.1:5000"
     };
     
     var discovery = true;
@@ -431,7 +432,7 @@
         $('#mapLoader').css("left",(size.width-$('#mapLoader').width())/2);
         $('#mapLoader').css("top",(size.height-$('#mapLoader').height())/2);
 
-        vistaModule = new vista(listener,mapContainer,size);
+        vistaModule = new vista(listener,mapContainer,size,settings.staAddress);
         vistaModule.addAOIBlock(true);
         $('#menuTriggerTab').tapTarget('open');
         

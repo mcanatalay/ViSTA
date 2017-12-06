@@ -12,6 +12,11 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.3.0:**
+
+> - STA Socket is eliminated.
+> - STA algorithm restructured as web-service.
+
 > **1.2.3:**
 
 > - Image URL providing feature implemented.
