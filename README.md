@@ -12,6 +12,11 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.3.1:**
+
+> - Minor wording changes.
+> - STA web-service problem solved.
+
 > **1.3.0:**
 
 > - STA Socket is eliminated.

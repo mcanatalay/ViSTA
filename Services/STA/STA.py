@@ -25,7 +25,7 @@ def getParticipants (pList, EyeTrackingData):
         myFile = EyeTrackingData[x]
         myRecords = myFile.split('\n')
         myRecords_templist = []
-
+        
         for y in range (1, len(myRecords) - 1):
             myRecords_templist.append(myRecords[y].split('\t'))
 
@@ -68,7 +68,7 @@ def createSequences (Participants, myAoIs, errorRateArea):
                 if float(Participants[keys[y]][z][3]) >= (float (myAoIs[k][1]) - errorRateArea) and float(Participants[keys[y]][z][3]) < ( ( (float (myAoIs[k][1]) - errorRateArea) + (float (myAoIs[k][2]) + 2 * errorRateArea) ) ) and float(Participants[keys[y]][z][4]) >= (float (myAoIs[k][3]) - errorRateArea) and float(Participants[keys[y]][z][4]) < ( ( ( float (myAoIs[k][3]) - errorRateArea) + (float (myAoIs[k][4]) + 2 * errorRateArea) ) ):
                     tempAoI = tempAoI + myAoIs[k][5]
                     tempDuration = int (Participants[keys[y]][z][2])
-
+    
             distanceList = []
             if len (tempAoI) > 1:
                 #tempaoi = "(" + tempAoI + ")"
@@ -347,12 +347,12 @@ def STA(response):
     pList, EyeTrackingData, SegmentationData, settings = convertData(response)
     myParticipants= getParticipants (pList, EyeTrackingData)
     myAoIs = getAoIs(SegmentationData)
-
+    
     myErrorRateArea = calculateErrorRateArea(settings['degreeOfAccuracy'],
         settings['distanceBetweenEyeTrackerAndParticipants'],
         settings['resolutionOfScreenX'], settings['resolutionOfScreenY'], settings['sizeOfScreen'])
     mySequences = createSequences (myParticipants, myAoIs, myErrorRateArea)
-
+    
     keys = mySequences.keys()
     for y in range (0 , len (keys)):
         mySequences[keys[y]] = mySequences[keys[y]].split('.')
@@ -393,11 +393,14 @@ def processData(data):
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST','GET'])
 def main():
     try:
         recivedData = request.form.get("jsondata")
-        return json.dumps(STA(recivedData))
+        if recivedData != None:
+            return json.dumps(STA(recivedData))
+        else:
+            return ""
     except Exception:
         return ""
 
