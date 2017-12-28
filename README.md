@@ -12,6 +12,10 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.3.2:**
+
+> - URL image temporary fix.
+
 > **1.3.1:**
 
 > - Minor wording changes.

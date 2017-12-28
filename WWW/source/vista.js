@@ -273,7 +273,6 @@ vista = function(
         } else if(imgURL != null){
             var cropIMG = new Image();
             cropIMG.crossOrigin = "Anonymous";
-            cropIMG.src = imgURL;
             cropIMG.onload = function(){             
                 var cropCanvas = document.createElement('canvas');
                 var cropContext = cropCanvas.getContext('2d');
@@ -291,6 +290,7 @@ vista = function(
                 
                 listener("LOADEREND");
             }
+            cropIMG.src = "proxy.php?" + imgURL+"?_="+(new Date().getTime());
             
         } else if(data.categories[categoryIndex].img == null){
             html2canvas(imgAddress,{
