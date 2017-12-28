@@ -16,6 +16,7 @@ Followings are version differences of ViSTA,
 
 > - URL image temporary fix.
 > - MiniProxy updated.
+> - STA visualization improved.
 
 > **1.3.1:**
 

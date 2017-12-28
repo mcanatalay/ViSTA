@@ -538,9 +538,11 @@ vista = function(
 
         for(var i = 0; areaWeights.length > i; i++){
             var area = data.AOIs[i];
-            var x = toRealX(area.startX + area.lengthX/2);
-            var y = toRealY(area.startY + area.lengthY/2);
-            areaNodes.push({id: i, x: x, y: y, value: areaWeights[i], group: i, label: i});
+            if(areaWeights[i] != 0){
+                var x = toRealX(area.startX + area.lengthX/2);
+                var y = toRealY(area.startY + area.lengthY/2);
+                areaNodes.push({id: i, x: x, y: y, value: areaWeights[i], group: i, label: i+1});
+            }
         }
 
         return {nodes: areaNodes, edges: areaEdges.get()};
