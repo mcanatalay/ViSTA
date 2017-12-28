@@ -15,6 +15,7 @@ Followings are version differences of ViSTA,
 > **1.3.2:**
 
 > - URL image temporary fix.
+> - MiniProxy updated.
 
 > **1.3.1:**
 
