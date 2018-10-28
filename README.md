@@ -12,6 +12,14 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.3.3:**
+
+> - Image file option added.
+> - URL image removed.
+> - New STA settings added.
+> - MiniProxy updated.
+> - VisJS updated.
+
 > **1.3.2:**
 
 > - URL image temporary fix.

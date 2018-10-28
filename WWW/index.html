@@ -1,17 +1,18 @@
 <html>
+
 <head>
     <script src="dependencies/jquery/jquery.min.js"></script>
     <script src="dependencies/vis/vis-network.min.js"></script>
     <script src="dependencies/html2canvas/html2canvas.min.js"></script>
     <script src="dependencies/materialize-css/js/materialize.min.js"></script>
-    
+
     <link rel="stylesheet" href="dependencies/vis/vis-network.min.css">
     <link rel="stylesheet" href="dependencies/materialize-css/css/materialize.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    
+
     <script src="source/vista.js"></script>
     <link rel="stylesheet" href="source/vista.css">
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <link rel="shortcut icon" href="fav.ico" />
     <title>ViSTA - Main</title>
 </head>
@@ -27,87 +28,98 @@
             <a href="" download="save.png" id="imageDownloadTrigger" style="margin-right: 60px;" class="btn-floating btn-large halfway-fab waves-effect waves-light teal amber hide">
                 <i class="material-icons unselectable">get_app</i>
             </a>
-            <a id="dataSelectionTrigger" class="modal-trigger btn-floating btn-large halfway-fab waves-effect waves-light teal pulse hide"  href="#dataSelectionModal">
+            <a id="dataSelectionTrigger" class="modal-trigger btn-floating btn-large halfway-fab waves-effect waves-light teal pulse hide"
+                href="#dataSelectionModal">
                 <i class="material-icons unselectable">list</i>
             </a>
         </div>
     </nav>
-    
-	<div class="row">
-            <div class="col s12">
-                <div style="padding: 0px;" class="card-panel outer">
-                    <ul id="visualMethodSelector" class="tabs">
-                          <li id="methodGazePath" data-type="GAZEPATH" class="tab col s2 disabled"><a class="active" href="#">Gaze Path</a></li>
-                          <li id="methodSTAMap" data-type="STAMAP" class="tab col s2 disabled"><a href="#">STA</a></li>
-                    </ul>
-                    <div class="outer">
-                        <div id="background" style="z-index: 1;"></div>
-                        <div class="inner" id="map" style="z-index: 2;"></div>
+
+    <div class="row">
+        <div class="col s12">
+            <div style="padding: 0px;" class="card-panel outer">
+                <ul id="visualMethodSelector" class="tabs">
+                    <li id="methodGazePath" data-type="GAZEPATH" class="tab col s2 disabled"><a class="active" href="#">Gaze
+                            Path</a></li>
+                    <li id="methodSTAMap" data-type="STAMAP" class="tab col s2 disabled"><a href="#">STA</a></li>
+                </ul>
+                <div class="outer">
+                    <div id="background" style="z-index: 1;"></div>
+                    <div class="inner" id="map" style="z-index: 2;"></div>
+                </div>
+                <div id="mapLoader" class="preloader-wrapper big active inner hide">
+                    <div class="spinner-layer spinner-blue">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
                     </div>
-                    <div id="mapLoader" class="preloader-wrapper big active inner hide">
-                      <div class="spinner-layer spinner-blue">
-                        <div class="circle-clipper left">
-                          <div class="circle"></div>
-                        </div><div class="gap-patch">
-                          <div class="circle"></div>
-                        </div><div class="circle-clipper right">
-                          <div class="circle"></div>
-                        </div>
-                      </div>
 
-                      <div class="spinner-layer spinner-red">
+                    <div class="spinner-layer spinner-red">
                         <div class="circle-clipper left">
-                          <div class="circle"></div>
-                        </div><div class="gap-patch">
-                          <div class="circle"></div>
-                        </div><div class="circle-clipper right">
-                          <div class="circle"></div>
+                            <div class="circle"></div>
                         </div>
-                      </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
 
-                      <div class="spinner-layer spinner-yellow">
+                    <div class="spinner-layer spinner-yellow">
                         <div class="circle-clipper left">
-                          <div class="circle"></div>
-                        </div><div class="gap-patch">
-                          <div class="circle"></div>
-                        </div><div class="circle-clipper right">
-                          <div class="circle"></div>
+                            <div class="circle"></div>
                         </div>
-                      </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
 
-                      <div class="spinner-layer spinner-green">
+                    <div class="spinner-layer spinner-green">
                         <div class="circle-clipper left">
-                          <div class="circle"></div>
-                        </div><div class="gap-patch">
-                          <div class="circle"></div>
-                        </div><div class="circle-clipper right">
-                          <div class="circle"></div>
+                            <div class="circle"></div>
                         </div>
-                      </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-	</div>
-    
-    <div class="fixed-action-btn">
-	<a id="menuTrigger" class="btn-floating btn-large green accent-4">
-            <i class="large material-icons unselectable">settings</i>
-	</a>
-	<ul>
-            <li>
-		<label id="dataAddTrigger" class="btn-floating blue waves-effect waves-light">
-                    <input style="display: none;" type="file" name="file[]" onchange='vistaModule.readFile(this)' multiple />
-                    <i class="material-icons unselectable">add</i>
-		</label>
-            </li>
-            <li>
-		<a id="managementTrigger" class="modal-trigger btn-floating yellow waves-effect waves-light" href="#managementModal">
-                    <i class="material-icons unselectable">build</i>
-		</a>
-            </li>
-	</ul>
+        </div>
     </div>
-    
+
+    <div class="fixed-action-btn">
+        <a id="menuTrigger" class="btn-floating btn-large green accent-4">
+            <i class="large material-icons unselectable">settings</i>
+        </a>
+        <ul>
+            <li>
+                <label id="dataAddTrigger" class="btn-floating blue waves-effect waves-light">
+                    <input style="display: none;" type="file" name="file[]" onchange='vistaModule.readFile(this)'
+                        multiple />
+                    <i class="material-icons unselectable">add</i>
+                </label>
+            </li>
+            <li>
+                <a id="managementTrigger" class="modal-trigger btn-floating yellow waves-effect waves-light" href="#managementModal">
+                    <i class="material-icons unselectable">build</i>
+                </a>
+            </li>
+        </ul>
+    </div>
+
     <div id="dataSelectionModal" class="modal bottom-sheet modal-fixed-footer">
         <div class="modal-content black-text">
             <h4>Data Selection</h4>
@@ -119,7 +131,7 @@
             <a id="dataSelectionButton" href="#" class="modal-action modal-close waves-effect waves-green btn-flat ">Draw</a>
         </div>
     </div>
-    
+
     <div id="managementModal" class="modal modal-fixed-footer">
         <div class="modal-content black-text">
             <h4>Settings</h4>
@@ -152,14 +164,24 @@
                             <label for="setting_daccuracy">Degree of Accuracy</label>
                         </div>
                     </div>
-               </form>
+                    <div class="row">
+                        <div class="input-field col 6">
+                            <input id="setting_tolarancelevel" type="text">
+                            <label for="setting_tolarancelevel">Tolarance Level</label>
+                        </div>
+                        <div class="input-field col 6">
+                            <input id="setting_highestfidelity" type="checkbox">
+                            <label for="setting_highestfidelity">Highest Fidelity</label>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
         <div class="modal-footer">
             <a id="managementButton" href="#" class="modal-action modal-close waves-effect waves-green btn-flat ">Save</a>
         </div>
     </div>
-    
+
     <div id="menuTriggerTab" style="margin: 50px;" class="tap-target green accent-4" data-activates="menuTrigger">
         <div class="tap-target-content">
             <div style="margin-top: -230px;">
@@ -177,11 +199,13 @@
             sizeOfScreen: 17,
             distance: 60,
             resX: 1280,
-            resY: 1024
+            resY: 1024,
+            tlevel: 1.00,
+            hfidelity: true
         },
         staAddress: "http://127.0.0.1:5000"
     };
-    
+
     var discovery = true;
     var selectedStimuliName = "";
     var selectedVisualMethod = "GAZEPATH";
@@ -190,106 +214,113 @@
     var vistaModule;
     var mapContainer = document.getElementById('map');
     var listContainer = "map";
-    var listener = function(response){
-        
-        if(response == "DATACHANGE"){
+    var listener = function (response) {
+
+        if (response == "DATACHANGE") {
             updateDataList();
-        } else if(response == "LOADERSTART"){
+        } else if (response == "LOADERSTART") {
             showLoader();
-        } else if(response == "LOADEREND"){
-            removeLoader();   
-        } else if(response == "UPDATEAOIS"){
+        } else if (response == "LOADEREND") {
+            removeLoader();
+        } else if (response == "UPDATEAOIS") {
             controlVisualMethods();
             drawAOIs();
-        } else if(response == "IMGDOWNLOAD"){
+        } else if (response == "IMGDOWNLOAD") {
             showDownloadLink(vistaModule.getDownloadImage());
         }
     }
-    
-    function createDataSelectionList(){
+
+    function createDataSelectionList() {
         var list = vistaModule.getListOfCategories();
         var ulHTML = "";
-        for(var i = 0; list.length > i; i++){
+        for (var i = 0; list.length > i; i++) {
             var element = list[i];
-            
+
             filter[element["name"]] = {
                 participants: element["participants"],
-                imgurl: null
+                img: null
             };
-            
-            var liHTML = '<li data-stimuliname="'+element["name"]+'">'+
-                    '<div class="collapsible-header">';
-            if(element["title"] == null){
+
+            var liHTML = '<li data-stimuliname="' + element["name"] + '">' +
+                '<div class="collapsible-header">';
+            if (element["title"] == null) {
                 liHTML +=
-                        '<i class="material-icons unselectable">filter_drama</i>'+element["name"]+'</div>';
-            } else{
+                    '<i class="material-icons unselectable">filter_drama</i>' + element["name"] + '</div>';
+            } else {
                 liHTML +=
-                        '<i class="material-icons unselectable">filter_drama</i>'+element["title"]+'</div>';
+                    '<i class="material-icons unselectable">filter_drama</i>' + element["title"] + '</div>';
             }
-                liHTML +=
-                        '<div style="padding: 10px;" class="collapsible-body">'+
-                            '<form class="col s12" action="#">'+
-                                '<div class="row">'+
-                                    '<p>Participants</p>';
-                            
-            for(var j = 0; element["participants"].length > j; j++){
+            liHTML +=
+                '<div style="padding: 10px;" class="collapsible-body">' +
+                '<form class="col s12" action="#">' +
+                '<div class="row">' +
+                '<p>Participants</p>';
+
+            for (var j = 0; element["participants"].length > j; j++) {
                 var innerElement = element["participants"][j];
-                liHTML += '<div class="input-field col s3" id="">'+
-                        '<input type="checkbox" value="1" class="participant" data-name="'+element["name"]+'" data-participant="'+innerElement+'" id="check-'+i+'-'+innerElement+'" checked/>'+
-                            '<label for="check-'+i+'-'+innerElement+'">Participant '+innerElement+'</label>'+
-                        '</div>';
+                liHTML += '<div class="input-field col s3" id="">' +
+                    '<input type="checkbox" value="1" class="participant" data-name="' + element["name"] + '" data-participant="' + innerElement + '" id="check-' + i + '-' + innerElement + '" checked/>' +
+                    '<label for="check-' + i + '-' + innerElement + '">Participant ' + innerElement + '</label>' +
+                    '</div>';
             }
 
-            liHTML +=               
-                                    '<div style="margin-top: 20px;" class="input-field col s12">'+
-                                        '<input class="imgurl" placeholder="Image URL" data-name="'+element["name"]+'" id="'+element["name"]+'_URL" type="text">'+
-                                        '<label for="'+element["name"]+'_URL">Image URL</label>'+
-                                    '</div>'+
-                                '</div>'+
-                            '</form>'+
-                        '</div>'+
-                      '</li>';
-              
+            liHTML +=
+                '<div class="input-field col s12">' +
+                '<div class="file-field input-field">'+
+                '<div class="waves-effect waves-light btn red">'+
+                '<i class="material-icons">insert_photo</i>'+
+                '<input class="imgurl" placeholder="Image URL" data-name="' + element["name"] + '" id="' + element["name"] + '_IMG" type="file">' +
+                '</div>'+
+                '<div class="file-path-wrapper">'+
+                '<input id="' + element["name"] + '_URL" class="file-path validate" type="text" value="">'+
+                '</div>'+
+                '</div>'+
+                '</div>' +
+                '</div>' +
+                '</form>' +
+                '</div>' +
+                '</li>';
+
             ulHTML += liHTML;
         }
         return ulHTML;
     }
-    
-    function updateDataList(){
+
+    function updateDataList() {
         $('#dataSelectionTrigger').removeClass("hide");
         $('#dataSelectionTrigger').addClass('pulse');
         $('#dataSelectionList').html(createDataSelectionList());
     }
-    
-    function showLoader(){
+
+    function showLoader() {
         $('#mapLoader').removeClass("hide");
         $('#mapLoader').show();
         $('#background').addClass("hide");
         $('#imageDownloadTrigger').addClass("hide");
-        $('#map').css("opacity","0");
+        $('#map').css("opacity", "0");
     }
-    
-    function removeLoader(){
+
+    function removeLoader() {
         $('#mapLoader').hide();
         $('#background').removeClass("hide");
-        $('#map').css("opacity","1");
+        $('#map').css("opacity", "1");
         vistaModule.createDownloadImage(selectedStimuliName);
     }
-    
-    function showDownloadLink(imgLink){
-        $('#imageDownloadTrigger').attr("href",imgLink);
+
+    function showDownloadLink(imgLink) {
+        $('#imageDownloadTrigger').attr("href", imgLink);
         $('#imageDownloadTrigger').removeClass("hide");
     }
-    
-    function controlVisualMethods(){
-        if(!vistaModule.isSTAMAPApplicable()){
+
+    function controlVisualMethods() {
+        if (!vistaModule.isSTAMAPApplicable()) {
             $('#methodSTAMap').addClass("disabled");
-        } else{
+        } else {
             $('#methodSTAMap').removeClass("disabled");
         }
     }
 
-    function resetVisualMethods(){
+    function resetVisualMethods() {
         prevVisualMethod = "GAZEPATH";
         selectedVisualMethod = "GAZEPATH";
         $('#visualMethodSelector').find("li").removeClass("disabled");
@@ -298,79 +329,84 @@
         vistaModule.addAOIBlock(false);
         controlVisualMethods();
     }
-    
-    function clearAOIs(){
+
+    function clearAOIs() {
         $('#map').parent().find('.aois').remove();
     }
-    
-    function drawAOIs(){
-        if(selectedVisualMethod == "GAZEPATH"){
+
+    function drawAOIs() {
+        if (selectedVisualMethod == "GAZEPATH") {
             clearAOIs();
             $('#map').parent().append(vistaModule.getAOIHTML());
         }
     }
-    
-    
-    $(document).ready(function(){
+
+
+    $(document).ready(function () {
         $('.modal').modal();
         $('select').material_select();
-        
+
         var size = {
             dataW: 1280,
             dataH: 1024,
             width: 0,
             height: 0
         }
-        
-        $('#dataSelectionList').delegate("li","click",function() {
+
+        $('#dataSelectionList').delegate("li", "click", function () {
             selectedStimuliName = $(this).data("stimuliname");
         });
-        
-        $('#dataSelectionButton').on("click",function(){
+
+        $('#dataSelectionButton').on("click", function () {
             resetVisualMethods();
             vistaModule.removeAOIs();
-            vistaModule.showGazePath(selectedStimuliName,filter[selectedStimuliName]);
+            vistaModule.showGazePath(selectedStimuliName, filter[selectedStimuliName]);
         });
-        
-        $('#dataSelectionList').delegate(".participant","click",function() {
-            if($(this).val() == 1){
+
+        $('#dataSelectionList').delegate(".participant", "click", function () {
+            if ($(this).val() == 1) {
                 var participants = new Array();
                 var index = filter[$(this).data("name")].participants.indexOf($(this).data("participant"));
-                for(var i = 0; filter[$(this).data("name")].participants.length > i; i++){
-                    if(i != index){
+                for (var i = 0; filter[$(this).data("name")].participants.length > i; i++) {
+                    if (i != index) {
                         participants.push(filter[$(this).data("name")].participants[i]);
                     }
                 }
                 filter[$(this).data("name")].participants = participants;
                 $(this).val(0);
-            } else{
+            } else {
                 filter[$(this).data("name")].participants.push($(this).data("participant"));
                 $(this).val(1);
             }
         });
-        
-        $('#dataSelectionList').delegate(".imgurl","keyup",function() {
-            var imgurl = $(this).val();
 
-            if(imgurl != "" && imgurl != " " && imgurl != null && imgurl != $(this).data("name")){
-                filter[$(this).data("name")].imgurl = imgurl;
-            } else{
-                filter[$(this).data("name")].imgurl = null;
+        $('#dataSelectionList').delegate(".imgurl", "change", function () {
+            var file = $(this).prop('files')[0];
+            var name = $(this).data("name");
+
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(){
+                    filter[name].img = reader.result;
+                }
+                reader.readAsDataURL(file);
+            } else {
+                filter[$(this).data("name")].img = null;
             }
         });
-        
-        $('#visualMethodSelector').delegate("li","click",function(event){
+
+        $('#visualMethodSelector').delegate("li", "click", function (event) {
             event.preventDefault();
-            if(!$(this).hasClass("disabled") && selectedStimuliName != ""){
+            if (!$(this).hasClass("disabled") && selectedStimuliName != "") {
                 selectedVisualMethod = $(this).data("type");
-                if(selectedVisualMethod != prevVisualMethod){
-                    if(selectedVisualMethod == "GAZEPATH"){
+                if (selectedVisualMethod != prevVisualMethod) {
+                    if (selectedVisualMethod == "GAZEPATH") {
                         drawAOIs();
                         vistaModule.showGazePath(selectedStimuliName);
                         vistaModule.addAOIBlock(false);
-                    } else if(selectedVisualMethod == "STAMAP"){
+                    } else if (selectedVisualMethod == "STAMAP") {
                         clearAOIs();
-                        vistaModule.showSTAMap(selectedStimuliName,settings.sta,filter[selectedStimuliName]);
+                        vistaModule.showSTAMap(selectedStimuliName, settings.sta, filter[selectedStimuliName]);
                         vistaModule.addAOIBlock(true);
                     }
                     prevVisualMethod = selectedVisualMethod;
@@ -379,75 +415,87 @@
                 }
             }
         });
-        
-        $('#menuTrigger').on('click',function(event){
-            if(discovery == true){
+
+        $('#menuTrigger').on('click', function (event) {
+            if (discovery == true) {
                 $('#menuTriggerTab').tapTarget('close');
                 event.preventDefault();
             }
-            
+
         });
-        
-        $('#dataSelectionTrigger').on('click',function(){
-           $(this).removeClass('pulse'); 
+
+        $('#dataSelectionTrigger').on('click', function () {
+            $(this).removeClass('pulse');
         });
-        
-        $('#managementButton').on('click',function(){
-            if($('#setting_width').val() != ""){
+
+        $('#managementButton').on('click', function () {
+            if ($('#setting_width').val() != "") {
                 settings.sta.resX = $('#setting_width').val();
-            } else{
+            } else {
                 $('#setting_width').val(settings.sta.resX);
             }
-            
-            if($('#setting_height').val() != ""){
+
+            if ($('#setting_height').val() != "") {
                 settings.sta.resY = $('#setting_height').val();
-            } else{
+            } else {
                 $('#setting_height').val(settings.sta.resY);
             }
-            
-            if($('#setting_inch').val() != ""){
+
+            if ($('#setting_inch').val() != "") {
                 settings.sta.sizeOfScreen = $('#setting_inch').val();
-            } else{
+            } else {
                 $('#setting_inch').val(settings.sta.sizeOfScreen);
             }
-            
-            if($('#setting_distance').val() != ""){
+
+            if ($('#setting_distance').val() != "") {
                 settings.sta.distance = $('#setting_distance').val();
-            } else{
+            } else {
                 $('#setting_distance').val(settings.sta.distance);
             }
-            
-            if($('#setting_daccuracy').val() != ""){
+
+            if ($('#setting_daccuracy').val() != "") {
                 settings.sta.daccuracy = $('#setting_daccuracy').val();
-            } else{
+            } else {
                 $('#setting_daccuracy').val(settings.sta.daccuracy);
             }
+            if ($('#setting_tolarancelevel').val() != "") {
+                settings.sta.tlevel = $('#setting_tolarancelevel').val();
+            } else {
+                $('#setting_tolarancelevel').val(settings.sta.tlevel);
+            }
+            if ($('#setting_highestfidelity').is(":checked")) {
+                settings.sta.hfidelity = true;
+            } else {
+                settings.sta.hfidelity = false;
+            }
         });
-        
-        
+
+
         size.width = $('#map').width();
         size.height = size.width * (size.dataH / size.dataW);
         $('#map').height(size.height);
-        
-        $('#mapLoader').css("left",(size.width-$('#mapLoader').width())/2);
-        $('#mapLoader').css("top",(size.height-$('#mapLoader').height())/2);
 
-        vistaModule = new vista(listener,mapContainer,size,settings.staAddress);
+        $('#mapLoader').css("left", (size.width - $('#mapLoader').width()) / 2);
+        $('#mapLoader').css("top", (size.height - $('#mapLoader').height()) / 2);
+
+        vistaModule = new vista(listener, mapContainer, size, settings.staAddress);
         vistaModule.addAOIBlock(true);
         $('#menuTriggerTab').tapTarget('open');
-        
+
         $('#setting_width').val(settings.sta.resX);
         $('#setting_height').val(settings.sta.resY);
         $('#setting_inch').val(settings.sta.sizeOfScreen);
         $('#setting_distance').val(settings.sta.distance);
         $('#setting_daccuracy').val(settings.sta.daccuracy);
-        
+        $('#setting_tolarancelevel').val(settings.sta.tlevel);
+        $('#setting_higestfidelity').prop('checked',settings.sta.hfidelity);
+
         //Handles resize event
-        $(window).bind('resize', function(event){
-            if(window.RT){
+        $(window).bind('resize', function (event) {
+            if (window.RT) {
                 clearTimeout(window.RT);
             }
-            window.RT = setTimeout(function(){
+            window.RT = setTimeout(function () {
                 this.location.reload(false);
             }, 100);
         });

@@ -196,8 +196,9 @@ vista = function(
     
     this.showGazePath = function(stimuliName, filter = null){
         listener("LOADERSTART");
-        if(filter != null && filter.imgurl != null){
-            fetchBackgroundImage(stimuliName, filter.imgurl);
+        if(filter != null && filter.img != null){
+            console.log("hello 2");
+            fetchBackgroundImage(stimuliName, filter.img);
         } else{
             fetchBackgroundImage(stimuliName);
         }
@@ -261,7 +262,7 @@ vista = function(
     
     /* Misc. Module Functions STARTS */
         
-    function fetchBackgroundImage(imgAddress, imgURL = null){
+    function fetchBackgroundImage(imgAddress, imgExternal = null){
         var categoryIndex = findCategoryIndex(imgAddress);
         
         if(data.categories[categoryIndex].img != null){
@@ -270,10 +271,10 @@ vista = function(
             
             listener("LOADEREND");
             
-        } else if(imgURL != null){
+        } else if(imgExternal != null){
             var cropIMG = new Image();
             cropIMG.crossOrigin = "Anonymous";
-            cropIMG.onload = function(){             
+            cropIMG.onload = function(){
                 var cropCanvas = document.createElement('canvas');
                 var cropContext = cropCanvas.getContext('2d');
                 cropCanvas.width = size.width;
@@ -290,7 +291,7 @@ vista = function(
                 
                 listener("LOADEREND");
             }
-            cropIMG.src = "proxy.php?" + imgURL+"?_="+(new Date().getTime());
+            cropIMG.src = imgExternal;
             
         } else if(data.categories[categoryIndex].img == null){
             html2canvas(imgAddress,{
