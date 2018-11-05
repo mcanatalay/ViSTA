@@ -1,6 +1,6 @@
 {
     "name": "vista",
-    "version": "1.3.3",
+    "version": "1.3.4",
     "description": "ViSTA is a visualization attempt to Scanpath Trend Analysis.",
     "main": "index.js",
     "scripts": {

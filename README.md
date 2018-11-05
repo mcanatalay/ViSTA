@@ -12,6 +12,10 @@ Versions
 
 Followings are version differences of ViSTA,
 
+> **1.3.4:**
+
+> - New STA version.
+
 > **1.3.3:**
 
 > - Image file option added.
