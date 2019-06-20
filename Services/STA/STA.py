@@ -144,10 +144,13 @@ def getSequenceNumber (Sequence, Item):
     return abstractedSequence.count(Item) + 1
 
 def getAbstractedSequence (Sequence):
-    myAbstractedSequence = [Sequence[0][0]]
-    for y in range (1, len (Sequence)):
-        if myAbstractedSequence[len(myAbstractedSequence) - 1] != Sequence[y][0]:
-            myAbstractedSequence.append(Sequence[y][0])
+    if len(Sequence) == 0:
+        myAbstractedSequence = []
+    else:
+        myAbstractedSequence = [Sequence[0][0]]
+        for y in range (1, len (Sequence)):
+            if myAbstractedSequence[len(myAbstractedSequence) - 1] != Sequence[y][0]:
+                myAbstractedSequence.append(Sequence[y][0])
     return myAbstractedSequence
 	
 def getExistingAoIListForSequence (Sequence):
@@ -167,8 +170,7 @@ def calculateImportanceThreshold (mySequences, Threshold):
             commonAoIs.append(myAoIdetail)
 
     if len (commonAoIs) == 0:
-        print "No shared instances!"
-        exit(1)
+        return -1
     
     minValueCounter = commonAoIs[0][1]
     for AoIdetails in commonAoIs:
@@ -207,22 +209,23 @@ def updateAoIsFlag(AoIs, threshold):
     return AoIs
 
 def removeInsignificantAoIs(Sequences, AoIList):
+    sequences = Sequences.copy()
     significantAoIs = []
     for AoI in AoIList:
         if AoI [3] == True:
             significantAoIs.append(AoI[0])
 
-    keys = Sequences.keys()
+    keys = sequences.keys()
     for y in range (0 , len (keys)):
         temp = []
-        for k in range (0, len(Sequences[keys[y]])):
+        for k in range (0, len(sequences[keys[y]])):
             try:
-                significantAoIs.index(Sequences[keys[y]][k][0:2])
-                temp.append(Sequences[keys[y]][k])
+                significantAoIs.index(sequences[keys[y]][k][0:2])
+                temp.append(sequences[keys[y]][k])
             except:
                 continue
-        Sequences[keys[y]] = temp
-    return Sequences
+        sequences[keys[y]] = temp
+    return sequences
 
 def getExistingAoIList (Sequences):
     AoIlist = []
@@ -239,13 +242,14 @@ def calculateNumberDurationOfFixationsAndNSV(Sequences):
     keys = Sequences.keys()
     for x in range (0 , len (keys)):
         myAbstractedSequence = []
-        myAbstractedSequence = [Sequences[keys[x]][0][0:2] + [1] + [int(Sequences[keys[x]][0][2])]]
-        for y in range (1, len (Sequences[keys[x]])):
-            if myAbstractedSequence[len(myAbstractedSequence) - 1][0:2] != Sequences[keys[x]][y][0:2]:
-                myAbstractedSequence.append(Sequences[keys[x]][y][0:2] + [1] + [int(Sequences[keys[x]][y][2])])
-            else:
-                myAbstractedSequence[len(myAbstractedSequence) - 1][2] = myAbstractedSequence[len(myAbstractedSequence) - 1][2] + 1
-                myAbstractedSequence[len(myAbstractedSequence) - 1][3] = myAbstractedSequence[len(myAbstractedSequence) - 1][3] + int (Sequences[keys[x]][y][2])
+        if len(Sequences[keys[x]]) != 0:
+            myAbstractedSequence = [Sequences[keys[x]][0][0:2] + [1] + [int(Sequences[keys[x]][0][2])]]
+            for y in range (1, len (Sequences[keys[x]])):
+                if myAbstractedSequence[len(myAbstractedSequence) - 1][0:2] != Sequences[keys[x]][y][0:2]:
+                    myAbstractedSequence.append(Sequences[keys[x]][y][0:2] + [1] + [int(Sequences[keys[x]][y][2])])
+                else:
+                    myAbstractedSequence[len(myAbstractedSequence) - 1][2] = myAbstractedSequence[len(myAbstractedSequence) - 1][2] + 1
+                    myAbstractedSequence[len(myAbstractedSequence) - 1][3] = myAbstractedSequence[len(myAbstractedSequence) - 1][3] + int (Sequences[keys[x]][y][2])
 
         Sequences[keys[x]] = myAbstractedSequence
     
@@ -304,12 +308,13 @@ def getAbstractedSequences(Sequences):
     keys = Sequences.keys()
     for x in range (0 , len (keys)):
         myAbstractedSequence = []
-        myAbstractedSequence = [Sequences[keys[x]][0][0:1] + [int(Sequences[keys[x]][0][1])]]
-        for y in range (1, len (Sequences[keys[x]])):
-            if myAbstractedSequence[len(myAbstractedSequence) - 1][0:1] != Sequences[keys[x]][y][0:1]:
-                myAbstractedSequence.append(Sequences[keys[x]][y][0:1] + [int(Sequences[keys[x]][y][1])])
-            else:
-                myAbstractedSequence[len(myAbstractedSequence) - 1][1] = myAbstractedSequence[len(myAbstractedSequence) - 1][1] + int (Sequences[keys[x]][y][1])
+        if len(Sequences[keys[x]]) != 0:
+            myAbstractedSequence = [Sequences[keys[x]][0][0:1] + [int(Sequences[keys[x]][0][1])]]
+            for y in range (1, len (Sequences[keys[x]])):
+                if myAbstractedSequence[len(myAbstractedSequence) - 1][0:1] != Sequences[keys[x]][y][0:1]:
+                    myAbstractedSequence.append(Sequences[keys[x]][y][0:1] + [int(Sequences[keys[x]][y][1])])
+                else:
+                    myAbstractedSequence[len(myAbstractedSequence) - 1][1] = myAbstractedSequence[len(myAbstractedSequence) - 1][1] + int (Sequences[keys[x]][y][1])
 
         n_Sequences[keys[x]] = myAbstractedSequence
     return n_Sequences
@@ -428,63 +433,68 @@ def STA(response):
     if highestFidelity is not True:
         ToleranceThreshold = toleranceLevel * len(keys)		
         myImportanceThreshold = calculateImportanceThreshold(mySequences_num, ToleranceThreshold)
-        myImportantAoIs = updateAoIsFlag(getNumberDurationOfAoIs(mySequences_num), myImportanceThreshold)
-        myNewSequences = removeInsignificantAoIs(mySequences_num, myImportantAoIs)
-    
-        #Second-Pass
-        myNewAoIList = getExistingAoIList(myNewSequences)
-        myNewAoIList = calculateTotalNumberDurationofFixationsandNSV(myNewAoIList, calculateNumberDurationOfFixationsAndNSV(myNewSequences))
-        myFinalList = getValueableAoIs(myNewAoIList, ToleranceThreshold)
-        myFinalList.sort( key = lambda x: (x[4], x[3], x[2]))
-        myFinalList.reverse()
-    
-        commonSequence = []
-        for y in range (0, len(myFinalList)):
-            commonSequence.append(myFinalList[y][0])
-        
-        trendingPath = getAbstractedSequence(commonSequence)
-        #print "Trending Path:", trendingPath
-        return trendingPath
-    else:
-        tolerantPaths = []
-        for toleranceLevel in [float(j) / 100 for j in range(0, 101)]:
-            ToleranceThreshold = toleranceLevel * len(keys)		
-            myImportanceThreshold = calculateImportanceThreshold(mySequences_num, ToleranceThreshold)
+        if myImportanceThreshold != -1:
             myImportantAoIs = updateAoIsFlag(getNumberDurationOfAoIs(mySequences_num), myImportanceThreshold)
             myNewSequences = removeInsignificantAoIs(mySequences_num, myImportantAoIs)
-    
+        
             #Second-Pass
             myNewAoIList = getExistingAoIList(myNewSequences)
             myNewAoIList = calculateTotalNumberDurationofFixationsandNSV(myNewAoIList, calculateNumberDurationOfFixationsAndNSV(myNewSequences))
             myFinalList = getValueableAoIs(myNewAoIList, ToleranceThreshold)
             myFinalList.sort( key = lambda x: (x[4], x[3], x[2]))
             myFinalList.reverse()
-    
+        
             commonSequence = []
             for y in range (0, len(myFinalList)):
                 commonSequence.append(myFinalList[y][0])
             
             trendingPath = getAbstractedSequence(commonSequence)
+            #print "Trending Path:", trendingPath
+            return trendingPath
+        else:
+            return []
+    else:
+        tolerantPaths = []
+        for toleranceLevel in [float(j) / 100 for j in range(0, 101)]:
+            ToleranceThreshold = toleranceLevel * len(keys)		
+            myImportanceThreshold = calculateImportanceThreshold(mySequences_num, ToleranceThreshold)
+            if myImportanceThreshold != -1:
+                myImportantAoIs = updateAoIsFlag(getNumberDurationOfAoIs(mySequences_num), myImportanceThreshold)
+                myNewSequences = removeInsignificantAoIs(mySequences_num, myImportantAoIs)
         
-            myNewNormalSequences_Temp = {}
-            myNewNormalSequences_Temp = getAbstractedSequences(mySequences)
+                #Second-Pass
+                myNewAoIList = getExistingAoIList(myNewSequences)
+                myNewAoIList = calculateTotalNumberDurationofFixationsandNSV(myNewAoIList, calculateNumberDurationOfFixationsAndNSV(myNewSequences))
+                myFinalList = getValueableAoIs(myNewAoIList, ToleranceThreshold)
+                myFinalList.sort( key = lambda x: (x[4], x[3], x[2]))
+                myFinalList.reverse()
+        
+                commonSequence = []
+                for y in range (0, len(myFinalList)):
+                    commonSequence.append(myFinalList[y][0])
+                
+                trendingPath = getAbstractedSequence(commonSequence)
+            
+                myNewNormalSequences_Temp = {}
+                myNewNormalSequences_Temp = getAbstractedSequences(mySequences)
 
-            keys = myNewNormalSequences_Temp.keys()
-            for y in range (0 , len (keys)):
-                tempSequence = []
-                for z in range (0, len(myNewNormalSequences_Temp[keys[y]])):
-                    tempSequence.append(myNewNormalSequences_Temp[keys[y]][z][0])
-                myNewNormalSequences_Temp[keys[y]] = getAbstractedSequence(tempSequence)
-        
-            tolerantPaths.append([trendingPath,calculateAverageSimilarity(myNewNormalSequences_Temp, trendingPath),toleranceLevel])
+                keys = myNewNormalSequences_Temp.keys()
+                for y in range (0 , len (keys)):
+                    tempSequence = []
+                    for z in range (0, len(myNewNormalSequences_Temp[keys[y]])):
+                        tempSequence.append(myNewNormalSequences_Temp[keys[y]][z][0])
+                    myNewNormalSequences_Temp[keys[y]] = getAbstractedSequence(tempSequence)
+            
+                tolerantPaths.append([trendingPath,calculateAverageSimilarity(myNewNormalSequences_Temp, trendingPath),toleranceLevel])
+            else:
+                tolerantPaths.append([[],calculateAverageSimilarity(myNewNormalSequences_Temp, []),toleranceLevel])
+                
         tolerantPaths.sort( key = lambda x: x[1])
         tolerantPaths.reverse()
         #print "Trending Path:", tolerantPaths[0][0]
         return tolerantPaths[0][0]
         #print "Tolerance Level:", tolerantPaths[0][2]
-
-
-    
+   
 def processData(data):
     return data
 

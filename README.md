@@ -6,11 +6,20 @@ ViSTA
 
 Documents are [on GitHub](https://mcanatalay.github.io/ViSTA/index.html), you can easily reach online version from here. 
 
+Our award winning related academic writing can be reached here, [ViSTA: Visualisation of Scanpath TrendAnalysis (STA)](http://ceur-ws.org/Vol-2201/UYMS_2018_paper_46.pdf).
+
+[Live Demo](http://iam.ncc.metu.edu.tr/vistatool/demo/)
+
 ----------
 Versions
 -------------
 
 Followings are version differences of ViSTA,
+
+> **1.3.5:**
+
+> - New STA version. (Tolerance level adjustment.)
+
 
 > **1.3.4:**
 
